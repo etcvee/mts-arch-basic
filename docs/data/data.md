@@ -7,90 +7,189 @@
 
 ```plantuml
 @startuml
-' Логическая модель данных в варианте UML Class Diagram (альтернатива ER-диаграмме).
-namespace ShoppingCart {
 
- class ShoppingCart
- {
-  id : string
-  createDate : datetime
-  updateDate : datetime
-  customer : Customer
-  price : ShoppingCartPrice
-  cartItems : CartItem[]
- }
+namespace ConferenceManagement {
+    class Participant {
+        Id: Integer
+        FirstName : String
+        LastName : String
+        Patronymic : String
+        Mobile: String
+        EMail: String
+        Company: String
+        Bio: String
+    }
 
- class ShoppingCartPrice
- {
-  type : CartItemPrice
- }
- class CartItemPrice
- {
-  type : CartItemPriceType
- }
+    class Speaker {
+    }
 
- enum CartPriceType
- {
-  total
-  grandTotal
-  offeringDiscount
-  couponsDiscount
- }
+    class Expert {
+    }
 
- class CartItem
- {
-  id : string
-  quantity : int
-  offering : Offering
-  relationship : CartItemRelationShip[]
-  price : CartItemPrice[]
-  status : CartItemStatus
- }
+    note bottom of Expert: Для типизации\n+ м.б. специфичные атрибуты
+    note bottom of Speaker: Для типизации\n+ м.б. специфичные атрибуты
 
-  class Customer
- {
-  id : string
- }
- 
- class Offering
- {
-  id : string
-  isQuantifiable : boolean
-  actionType : OfferingActionType
-  validFor : ValidFor
- }
-  
- class ProductSpecificationRef
- {
-  id : string
- }
- 
- ShoppingCart *-- "1..*" ShoppingCartPrice
- ShoppingCartPrice -- CartPriceType
- ShoppingCart *-- "*" CartItem
- CartItem *-- "*" CartItemPrice
- CartItemPrice -- CartPriceType
- CartItem *-- "1" Offering
- Offering *-- "1" ProductSpecificationRef
- Offering *-- "0..1" ProductConfiguration
- ShoppingCart *-- "1" Customer
+    class Room {
+        Id: Integer
+        Name: String
+        Description: String
+    }
+
+    Participant <|-- Speaker
+    Participant <|-- Expert
 }
 
-namespace Ordering {
- ProductOrder *-- OrderItem
- OrderItem *-- Product
- Product *-- ProductSpecificationRef
- ProductOrder *-- Party
+namespace ReportManagement {
+    class SpeakerRef {
+        Id: Integer
+    }
+
+    class ExpertRef {
+        Id: Integer
+    }
+
+    class Report {
+        Id: Integer
+        Name: String
+        Description: String
+        Speaker: SpeakerRef
+        Reviewer: ExpertRef
+        Status: ReportStatus
+        Feedback: ReviewFeedback
+        Presentation: Presentation
+    }
+
+    class Presentation {
+        Id: Integer
+        File: Files[]
+    }
+
+    class File {
+        Id: Integer
+        Name: String
+        Content: Binary
+        CreatedAt: DateTime
+    }
+
+    class ReviewFeedback {
+        Id: Integer
+        Date: DateTime
+        Comment: String
+    }
+
+    enum ReportStatus {
+        Pending
+        Reviewing
+        Approved
+        Rejected
+        Withdrawn
+    }
+
+    Report *-- SpeakerRef
+    Report *-- ExpertRef
+    Report *-- ReportStatus
+    Report *-- ReviewFeedback
+    Report *-- Presentation
+
+    Presentation *-- File
+
+    SpeakerRef ..> ConferenceManagement.Speaker : ref
+    ExpertRef ..> ConferenceManagement.Expert : ref
 }
 
-namespace ProductCatalog {
- ShoppingCart.ProductSpecificationRef ..> ProductSpecification : ref
- Ordering.ProductSpecificationRef ..> ProductSpecification : ref
+namespace OnlineStreaming {
+    class Stream {
+        Id: Integer
+        Room: RoomRef
+        WatchUrl: Url
+        Administrators: UserRef[]
+        Watchers: UserRef[]
+    }
+
+    class RoomRef {
+        Id: Integer
+    }
+
+    class UserRef {
+        Id: Integer
+    }
+
+    class Url {
+        Value: String
+    }
+
+    Stream *-- RoomRef
+    Stream *-- UserRef
+    Stream *-- Url
+
+    UserRef ..> ConferenceManagement.Participant : ref
+    RoomRef ..> ConferenceManagement.Room : ref
 }
 
-namespace CX {
- ShoppingCart.Customer ..> Customer : ref
- Ordering.Party ..> Customer : ref
+namespace FeedbackManagement {
+    class Feedback {
+        Id: Integer
+        User: UserRef
+        Entries: FeedbackEntry[]
+    }
+
+    class FeedbackEntry {
+        Id: Integer
+        Report: ReportRef
+        Rate: Rate
+        Comment: String
+    }
+
+    class Rate {
+        Value: Integer   
+    }
+
+    class ReportRef {
+        Id: Integer
+    }
+
+    class UserRef {
+        Id: Integer
+    }
+
+    Feedback *-- FeedbackEntry
+    FeedbackEntry *-- ReportRef
+    FeedbackEntry *-- UserRef
+    FeedbackEntry *-- Rate
+    
+    UserRef ..> ConferenceManagement.Participant : ref
+    ReportRef ..> ReportManagement.Report : ref
+}
+
+namespace ScheduleManagement {
+    class Schedule {
+        Id: Integer
+        Date: Date
+        TimeSlots: TimeSlot[]
+    }
+
+    class TimeSlot {
+        Id: String
+        StartTime: Time
+        EndTime: Time
+        Room: RoomRef
+        Report: ReportRef
+    }
+
+    class RoomRef {
+        Id: Integer
+    }
+
+    class ReportRef {
+        Id: Integer
+    }
+
+    Schedule *-- TimeSlot
+    TimeSlot *-- RoomRef
+    TimeSlot *-- ReportRef
+
+    ReportRef ..> ReportManagement.Report : ref
+    RoomRef ..> ConferenceManagement.Room : ref
 }
 @enduml
 ```
