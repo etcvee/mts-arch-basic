@@ -1,0 +1,85 @@
+openapi: 3.0.0
+info:
+  title: Conference server API
+  description: API to retrive information about main entities of Conference server
+  version: 1.0.0
+servers:
+  - url: http://{{baseurl}}
+tags:
+  - name: presentationsAndAuthor
+  - name: presentationsAndAuthor > {title}
+paths:
+  /presentationsAndAuthor/{title}:
+    get:
+      tags:
+        - presentationsAndAuthor > {title}
+      summary: Read presentations by title
+      parameters:
+        - name: Accept
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: title
+          in: path
+          schema:
+            type: string
+          required: true
+          example: 'reference #/components/schemas/title not found in the OpenAPI spec'
+      responses:
+        '200':
+          description: OK
+          headers:
+            date:
+              schema:
+                type: string
+                example: Sun, 23 Apr 2023 16:17:31 GMT
+            server:
+              schema:
+                type: string
+                example: uvicorn
+            content-length:
+              schema:
+                type: integer
+                example: '163'
+            content-type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                title: First Presentation
+                first_name: Liam
+                last_name: Moore
+                email: Liam_Moore4478@iaart.store
+                birth_date: '1981-11-27 13:44:56Z'
+                date: 23.02.2023
+        '404':
+          description: Not Found
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                message: <string>
+        '500':
+          description: Internal Server Error
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                message: <string>

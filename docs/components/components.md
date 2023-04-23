@@ -20,7 +20,7 @@ Person(admin, "Администратор", "Административный п
 System_Boundary(hello_conf_system, "HelloConf") {
    Container(frontend, "Клиентское веб-приложение", "html, JavaScript, Angular", "Веб-портал helloconf")
 
-   Container(load_balancer, "API Gateway", "Nginx", "Точка входа в систему. Балансировщик нагрузки.")
+   Container(bff, "Backend for frontend (BFF)", "C#, .NET Core", "Точка входа в API системы")
 
    Container(conference_mngmt_service, "Сервис управления конференцией", "C#, .NET Core, ASP.NET Core", "Общий сервис управления конференцией", $tags = "microService")
    Container(report_mngmt_service, "Сервис управления докладами", "C#, .NET Core, ASP.NET Core", "Предоставляет функционал по работе с докладами (создание, рассмотрение)", $tags = "microService")
@@ -60,13 +60,13 @@ Rel(speaker, frontend, "Подача доклада", "HTTPS")
 Rel(expert, frontend, "Рецензирование доклада", "HTTPS")
 Rel(admin, frontend, "Формирование расписания конференции", "HTTPS")
 
-Rel(frontend, load_balancer, "Пользовательский запрос", "HTTPS")
+Rel(frontend, bff, "Пользовательский запрос", "HTTPS")
 
-Rel(load_balancer, conference_mngmt_service, "Управление докладчиками/экпертами (CRUD), управление залами (CRUD)", "HTTP")
-Rel(load_balancer, report_mngmt_service, "Управление докладами (CRUD)", "HTTP")
-Rel(load_balancer, schedule_mngmt_service, "Управление программой конференции (CRUD)", "HTTP")
-Rel(load_balancer, feedback_mngmt_service, "Оценка доклада", "HTTP")
-Rel(load_balancer, online_streaming_service, "Просмотр онлайн стрима", "HTTP")
+Rel(bff, conference_mngmt_service, "Управление докладчиками/экпертами (CRUD), управление залами (CRUD)", "HTTP")
+Rel(bff, report_mngmt_service, "Управление докладами (CRUD)", "HTTP")
+Rel(bff, schedule_mngmt_service, "Управление программой конференции (CRUD)", "HTTP")
+Rel(bff, feedback_mngmt_service, "Оценка доклада", "HTTP")
+Rel(bff, online_streaming_service, "Просмотр онлайн стрима", "WebRTC")
 
 Rel(conference_mngmt_service, conference_db, "Хранение информации о конференции", "TCP/SQL")
 Rel(report_mngmt_service, report_db, "Хранение информации о докладе", "TCP/SQL")
@@ -74,20 +74,20 @@ Rel(report_mngmt_service, cache, "Получение утвержденных д
 Rel(report_db, report_status_notification_service, "Получение информации об изменении статуса доклада", "TCP/SQL")
 Rel(report_replication_service, report_db, "Получение утвержденных докладов", "TCP/SQL")
 Rel(report_status_notification_service, message_broker, "Формирования уведомления для пользователя", "TCP/Kafka protocol")
-Rel(report_replication_service, cache, "Утвержденные доклады", "TCP/Kafka protocol")
+Rel(report_replication_service, cache, "Утвержденные доклады", "TCP/Redis protocol")
 
 Rel(schedule_mngmt_service, schedule_db, "Хранение информации о расписании", "TCP/SQL")
 Rel(schedule_mngmt_service, cache, "Чтение расписания", "TCP/Redis QL")
 Rel(feedback_mngmt_service, message_broker, "Событие об оценке доклада", "TCP/Kafka protocol")
 
 Rel(schedule_replication_service, schedule_db, "Получение события об изменении расписания", "TCP/SQL")
-Rel(schedule_replication_service, cache, "Обновление расписания", "TCP")
+Rel(schedule_replication_service, cache, "Обновление расписания", "TCP/Redis protocol")
 
-Rel(online_streaming_service, video_storage, "Получение видео-потока", "HTTP")
+Rel(online_streaming_service, video_storage, "Получение видео-потока", "Ceph API")
 
-Rel(feedback_mngmt_service, feedback_db, "Читает данные из", "TCP/SQL")
+Rel(feedback_mngmt_service, feedback_db, "Читает данные из", "TCP/Clickhouse Protocol")
 Rel(feedback_aggregation_service, message_broker, "Получение запросов на отправку нотификаций", "TCP/Kafka protocol")
-Rel(feedback_aggregation_service, feedback_db, "Обновление оценки докладов", "TCP")
+Rel(feedback_aggregation_service, feedback_db, "Обновление оценки докладов", "TCP/Clickhouse Protocol")
 
 Rel(notification_service, message_broker, "Чтение событий о нотификациях", "TCP/Kafka protocol")
 Rel(notification_service, email_system, "Отправка нотификаций", "SMTP")
@@ -106,7 +106,7 @@ SHOW_LEGEND()
 | Докладчик                            | Человек, выступающий перед аудиторией с докладом                                                                                                 |
 | Администратор                        | Администратор системы, управляет конференцией и формирует расписание                                                                             |
 | Клиентское веб-приложение            | Интерфейс пользователя для взаимодействия с системой                                                                                             |
-| API Gateway                          | Единая точка доступа к API системы, предоставляет функционал балансировки и другой сквозной функционал                                           |
+| Backend for frontend (BFF)           | Единая точка доступа к API системы                                                                                                               |
 | Сервис управления конференцией       | Предоставляет функционал по управлению конференцией (участники, залы, ...)                                                                       |
 | Сервис управления расписанием        | Предоставляет функционал по управлению программой конференции (добавлене докладов в расписание, ...)                                             |
 | Сервис управления докладами          | Предоставляет функционал по управлению докладами (регистрация доклада, рассмотрение и утверждение доклада)                                       |
