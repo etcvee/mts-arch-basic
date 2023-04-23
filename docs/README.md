@@ -246,7 +246,8 @@ Participant --> UC15
 <!-- Записи о ключевых принятых архитектурных решениях (ADR) для реализации архитектурно-значимых требований.
 Подробнее: https://confluence.mts.ru/pages/viewpage.action?pageId=421162308
 -->
-- [ADR.NNN Суть решения](adr/adr-template.md)
+- [ADR.001 Категория системы](adr/adr.001.md)
+- [ADR.002 Способ интеграции](adr/adr.002.md)
 
 ### [Контекст решения](context/context.md)
 
