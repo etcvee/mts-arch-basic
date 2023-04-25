@@ -50,7 +50,7 @@ https://confluence.mts.ru/pages/viewpage.action?pageId=375782119
         </tr>
         <tr>
             <td>Требования</td>
-            <td>FR.022, FR.023</td>
+            <td>FR.015, FR.022</td>
         </tr>
     </tbody>
 </table>

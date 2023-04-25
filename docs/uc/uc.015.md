@@ -49,7 +49,7 @@ https://confluence.mts.ru/pages/viewpage.action?pageId=375782119
         </tr>
         <tr>
             <td>Требования</td>
-            <td>FR.022, FR.024</td>
+            <td>FR.015, FR.023</td>
         </tr>
     </tbody>
 </table>
