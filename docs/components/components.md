@@ -18,8 +18,10 @@ Person(expert, "Эксперт", "Сотрудник программного к
 Person(admin, "Администратор", "Административный персонал")
 
 System_Boundary(hello_conf_system, "HelloConf") {
-   Container(frontend, "Клиентское веб-приложение", "html, JavaScript, Angular", "Веб-портал helloconf")
-   Container(bff, "Backend for frontend (BFF)", "C#, .NET Core", "Точка входа в API системы")
+   System_Boundary(frontend_bff, "Фронтэнд") {
+      Container(frontend, "Клиентское веб-приложение", "html, JavaScript, Angular", "Веб-портал helloconf")
+      Container(bff, "Backend for frontend (BFF)", "C#, .NET Core", "Точка входа в API системы")
+   }
 
    System_Boundary(report_mngmt, "Управление докладами") {
       Container(report_mngmt_service, "Сервис управления докладами", "C#, .NET Core, ASP.NET Core", "Предоставляет функционал по работе с докладами (создание, рассмотрение)", $tags = "microService")
@@ -52,9 +54,13 @@ System_Boundary(hello_conf_system, "HelloConf") {
       ContainerDb(feedback_db, "База данных оценок", "ClickHouse", "Хранение оценок докладов", $tags = "storage")
    }
 
-   
-   Container(notification_service, "Сервис нотификаций", "C#, .NET Core, ASP.NET Core", "Предоставляет общий функционал по отправке EMail уведомлений", $tags = "microService")
-   Container(message_broker, "Брокер сообщений", "Kafka", "Транспорт для бизнес-событий")
+   System_Boundary(notification_mngmt, "Инфраструктура оповещений") {
+      Container(notification_service, "Сервис нотификаций", "C#, .NET Core, ASP.NET Core", "Предоставляет общий функционал по отправке EMail уведомлений", $tags = "microService")
+   }
+
+   System_Boundary(message_mngmt, "Инфраструктура обмена сообщений") {
+      Container(message_broker, "Брокер сообщений", "Kafka", "Транспорт для бизнес-событий")
+   }
 }
 
 System_Ext(email_system, "Почтовый сервис", "Внешний почтовый сервер")  
